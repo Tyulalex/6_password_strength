@@ -1,6 +1,6 @@
 # Password Strength Calculator
 
-[TODO. There will be project description]
+Program calculates strength of user's password based on different criteria
 
 # Project Goals
 
