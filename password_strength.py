@@ -60,7 +60,7 @@ def get_password_strength(password):
     for is_criteria_satisfied in criterias_to_be_satisfied_list:
         if not is_criteria_satisfied(password):
             strentgh -= 1
-    return strentgh if strentgh else 1
+    return strentgh if strentgh > 0 else 1
 
 
 if __name__ == "__main__":
