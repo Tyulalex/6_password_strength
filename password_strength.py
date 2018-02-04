@@ -2,6 +2,7 @@ import string
 import re
 import getpass
 
+
 def password_has_upper_case(password):
     return any(character.isupper() for character in password)
 
