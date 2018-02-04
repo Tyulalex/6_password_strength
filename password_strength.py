@@ -1,60 +1,71 @@
 import string
 import re
+import getpass
 
-PASSWORD_BLACKLIST = [
-    "qwerty",
-    "Password1\". Ааа!",
-    "password",
-    "12345678",
-    "(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d",
-    "[\+7|8][0-9]{11}"
-]
-
-PERSONAL_INFO = {
-    "name": "", "bdate": "", "company": ""
-}
+def password_has_upper_case(password):
+    return any(character.isupper() for character in password)
 
 
-def is_password_in_blacklist(password):
-    return not any(
-        re.match(pattern, password, re.IGNORECASE
-                 ) for pattern in PASSWORD_BLACKLIST
-        ) and not any(
-        re.match(pattern, password, re.IGNORECASE
-                 ) for pattern in PERSONAL_INFO.values()
-        )
+def password_has_lower_case(password):
+    return any(character.islower() for character in password)
+
+
+def password_has_any_digit(password):
+    return any(character.isdigit() for character in password)
+
+
+def password_has_special_symbols(password):
+    return any(character in string.punctuation for character in password)
+
+
+def password_does_not_match_calendar_dates(password):
+    r_exp = "(0[1-9]|1[012])[- \/.](0[1-9]|[12][0-9]|3[01])[- \/.](19|20)\d\d"
+    return not re.match(r_exp, password)
+
+
+def password_does_not_match_phone_numbers(password):
+    return not re.match(".*[\+7|8][0-9]{11}.*", password)
+
+
+def password_has_any_letter(password):
+    return any(character.isalpha() for character in password)
+
+
+def password_does_not_match_licence_plate(password):
+    return not re.match("[aA-zZ]\d{3}[aA-zZ]{2}\d{1,3}", password)
+
+
+def is_password_length_more_than_given_length(password, length=10):
+    return len(password) > length
 
 
 def get_list_of_password_criterias():
     return [
-        lambda user_password: any(
-            character.isupper() for character in user_password
-        ) and any(
-            character.islower() for character in user_password
-        ),
-        lambda user_password: len(user_password) > 10,
-        lambda user_password: any(
-            character.isdigit() for character in user_password
-        ),
-        lambda user_password: any(
-            character in string.punctuation for character in user_password
-        ),
-        lambda user_password: is_password_in_blacklist(user_password)
+        is_password_length_more_than_given_length,
+        password_does_not_match_licence_plate,
+        password_has_any_letter,
+        password_does_not_match_phone_numbers,
+        password_does_not_match_calendar_dates,
+        password_has_special_symbols,
+        password_has_any_digit,
+        password_has_lower_case,
+        password_has_upper_case
     ]
 
 
 def get_password_strength(password):
-    strentgh = 0
+    strentgh = 10
     criterias_to_be_satisfied_list = get_list_of_password_criterias()
-    for is_satisfied_criteria in criterias_to_be_satisfied_list:
-        if is_satisfied_criteria(password):
-            strentgh += 2
-    return strentgh
+    for is_criteria_satisfied in criterias_to_be_satisfied_list:
+        if not is_criteria_satisfied(password):
+            strentgh -= 1
+    return strentgh if strentgh else 1
 
 
 if __name__ == '__main__':
-    PERSONAL_INFO['name'] = input("Как Вас зовут?\n")
-    PERSONAL_INFO['bdate'] = input("Введите Дату рождения\n")
-    PERSONAL_INFO['company'] = input("Имя компании, где вы работаете\n")
-    raw_user_password = input("Введите пароль:\n")
+    max_strengh = 10
+    raw_user_password = getpass.getpass("Введите пароль:\n")
+    digit_password_level = get_password_strength(raw_user_password)
+    print(
+        "Оценка паролей по цифровой шкале:10 - очень крутой, 1 - очень слабый")
     print("Уровень вашего пароля:", get_password_strength(raw_user_password))
