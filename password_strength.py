@@ -64,7 +64,6 @@ def get_password_strength(password):
 
 
 if __name__ == '__main__':
-    max_strengh = 10
     raw_user_password = getpass.getpass("Введите пароль:\n")
     digit_password_level = get_password_strength(raw_user_password)
     print(
