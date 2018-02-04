@@ -63,7 +63,7 @@ def get_password_strength(password):
     return strentgh if strentgh else 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     raw_user_password = getpass.getpass("Введите пароль:\n")
     print(
         "Оценка паролей по цифровой шкале:10 - очень крутой, 1 - очень слабый")
